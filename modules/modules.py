@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -260,7 +261,71 @@ class Encoder(nn.Module):
 
 
 
+class Decoder(nn.Module):
+    
+    def __init__(self, output_channels, channels, latent_dim, has_attention, num_resblock, groups=16):
+        super(Decoder, self).__init__()
+        self.out_channels = output_channels
+        self.channels = channels
+        self.latent_dim = latent_dim
+        self.has_attention = has_attention
+        self.num_resblock = num_resblock
+        self.groups = groups
+        
+        self.model = self._build_decoder()
+        self.num_parameters = self._calculate_num_parameters() # (p_train, p_non_train)
+        
+    
+    def forward(self, x):
+        return self.model(x)
+    
+    
+    def _calculate_num_parameters(self):
+        "Evaluate the number of trainable and non-trainable model parameters"
+        p_total = 0
+        p_train = 0
+        for p in self.parameters():
+            p_total += p.numel()
+            if p.requires_grad:
+                p_train += p.numel()       
+        p_non_train = p_total - p_train
+        return p_train, p_non_train
+    
+    
+    def _build_decoder(self):
+        
+        layers = []
+        
+        # First convolution for channels update
+        layers.append(nn.Conv2d(in_channels=self.latent_dim, 
+                                out_channels=self.channels[0], 
+                                kernel_size=3,
+                                padding=1))
+        
+        # First Residual Block
+        layers.append(ResBlock(input_channels=self.channels[0], groups=self.groups))
+        
+        # Attention Block
+        layers.append(AttentionBlock(input_channels=self.channels[0], groups=self.groups))
+        
+        # m x {ResStack, Upsampling} 
+        for i in range(len(self.channels)-1):
+            layers.append(ResStack(input_channels=self.channels[i], 
+                                   num_resblock=self.num_resblock,
+                                   groups=self.groups))
+            
+            layers.append(UpSampleBlock(input_channels=self.channels[i], 
+                                        out_channels=self.channels[i+1]))
+            
+        # GroupNorm, Swish, Conv2D
+        layers.append(nn.GroupNorm(num_groups=self.groups, num_channels=self.channels[-1]))
+        layers.append(Swish())
+        layers.append(nn.Conv2d(in_channels=self.channels[-1], 
+                                out_channels=self.out_channels, 
+                                kernel_size=3,
+                                padding=1))
 
+        return nn.Sequential(*layers)
 
 
 
