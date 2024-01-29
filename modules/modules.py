@@ -172,7 +172,7 @@ class AttentionBlock(nn.Module):
         
 class Encoder(nn.Module):
 
-    def __init__(self, input_channels, channels, latent_dim, has_attention, num_resblock, groups=16):
+    def __init__(self, input_channels, channels, latent_dim, num_resblock, groups=16):
         """Encoder
 
         Parameters
@@ -184,22 +184,23 @@ class Encoder(nn.Module):
             the whole image
         latent_dim : int
             Dimensionality of the embedding vectors (D in the original paper).
-        has_attention : bool
-            Whether to use attention blocks or not.
         num_resblock : int
             Number of Residual blocks to apply to each resolution.
         groups : int
             Number of groups for the GroupNorm layers.
+
+        Returns
+        -------
+        None.
         """
         super(Encoder, self).__init__()
         self.input_ch = input_channels
         self.channels = channels
         self.latent_dim = latent_dim
-        self.has_attention = has_attention
         self.num_resblock = num_resblock
         self.groups = groups
         self.model = self._build_encoder()
-        self.num_parameters = self._calculate_num_parameters() # (p_train, p_non_train)
+        self.num_trainable_param, self.num_non_trainable_param = self._calculate_num_parameters() # (p_train, p_non_train)
 
     def forward(self, x):
         return self.model(x)
@@ -263,17 +264,36 @@ class Encoder(nn.Module):
 
 class Decoder(nn.Module):
     
-    def __init__(self, output_channels, channels, latent_dim, has_attention, num_resblock, groups=16):
+    def __init__(self, output_channels, channels, latent_dim, num_resblock, groups=16):
+        """Decoder
+        
+        Parameters
+        ----------
+        output_channels : int
+            Number of output channels.
+        channels : list
+            Number of channels for each convolutional upsampling step. The last convolution is applied to 
+            the whole image
+        latent_dim : int    
+            Dimensionality of the embedding vectors.
+        num_resblock : int
+            Number of Residual blocks to apply to each resolution.
+        groups : int
+            Number of groups for the GroupNorm layers.
+        
+        Returns
+        -------
+            None.
+        """
         super(Decoder, self).__init__()
         self.out_channels = output_channels
         self.channels = channels
         self.latent_dim = latent_dim
-        self.has_attention = has_attention
         self.num_resblock = num_resblock
         self.groups = groups
         
         self.model = self._build_decoder()
-        self.num_parameters = self._calculate_num_parameters() # (p_train, p_non_train)
+        self.num_trainable_param, self.num_non_trainable_param = self._calculate_num_parameters() # (p_train, p_non_train)
         
     
     def forward(self, x):
