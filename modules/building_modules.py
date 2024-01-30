@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from custom_activations import Swish
+from modules.custom_activations import Swish
 
 
 class ResBlock(nn.Module):
@@ -194,7 +194,7 @@ class Encoder(nn.Module):
         None.
         """
         super(Encoder, self).__init__()
-        self.input_ch = input_channels
+        self.input_channels = input_channels
         self.channels = channels
         self.latent_dim = latent_dim
         self.num_resblock = num_resblock
@@ -223,7 +223,7 @@ class Encoder(nn.Module):
         
         layers = []
         # First convolution
-        layers.append(nn.Conv2d(in_channels=self.input_ch, 
+        layers.append(nn.Conv2d(in_channels=self.input_channels, 
                                 out_channels=self.channels[0], 
                                 kernel_size=3,
                                 padding=1))
@@ -234,7 +234,7 @@ class Encoder(nn.Module):
                                    num_resblock=self.num_resblock,
                                    groups=self.groups))
             layers.append(DownSampleBlock(input_channels=self.channels[i], 
-                                          out_channels=self.channels[i+1]))
+                                          output_channels=self.channels[i+1]))
             
         # ResStack to the last dimension
         layers.append(ResStack(input_channels=self.channels[-1], 
@@ -286,7 +286,7 @@ class Decoder(nn.Module):
             None.
         """
         super(Decoder, self).__init__()
-        self.out_channels = output_channels
+        self.output_channels = output_channels
         self.channels = channels
         self.latent_dim = latent_dim
         self.num_resblock = num_resblock
@@ -335,13 +335,13 @@ class Decoder(nn.Module):
                                    groups=self.groups))
             
             layers.append(UpSampleBlock(input_channels=self.channels[i], 
-                                        out_channels=self.channels[i+1]))
+                                        output_channels=self.channels[i+1]))
             
         # GroupNorm, Swish, Conv2D
         layers.append(nn.GroupNorm(num_groups=self.groups, num_channels=self.channels[-1]))
         layers.append(Swish())
         layers.append(nn.Conv2d(in_channels=self.channels[-1], 
-                                out_channels=self.out_channels, 
+                                out_channels=self.output_channels, 
                                 kernel_size=3,
                                 padding=1))
 

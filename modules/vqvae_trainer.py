@@ -144,7 +144,6 @@ class VQVAETrainer():
 
 
 
-
     def _validate(self,
                   val_dataloader,
                   rec_loss_fn):

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from modules import Encoder, Decoder, VectorQuantizer, VectorQuantizerEMA
+from modules.building_modules import Encoder, Decoder, VectorQuantizer, VectorQuantizerEMA
 import os
 import pickle
 
@@ -8,8 +8,8 @@ import pickle
 class VQVAE(nn.Module):
     
     def __init__(self, 
-                 in_channels,
-                 out_channels,
+                 input_channels,
+                 output_channels,
                  channels,
                  num_resblock,
                  num_emb,  
@@ -22,9 +22,9 @@ class VQVAE(nn.Module):
 
         Parameters
         ----------
-        in_channels : int
+        input_channels : int
             Number of input channels. Tipically 3 for RGB images, 1 for grayscale.
-        out_channels : int
+        output_channels : int
             Number of output channels. Tipically 3 for RGB images, 1 for grayscale.
         channels : list
             List of number of channels for the encoder and decoder.
@@ -47,8 +47,8 @@ class VQVAE(nn.Module):
 
         """
         super(VQVAE, self).__init__()
-        self.in_channels = in_channels
-        self.out_channels = out_channels
+        self.input_channels = input_channels
+        self.output_channels = output_channels
         self.channels = channels
         self.num_resblock = num_resblock
         self.num_emb = num_emb
@@ -57,13 +57,13 @@ class VQVAE(nn.Module):
         self.groups = groups
         self.ema_update = ema_update
 
-        self.encoder = Encoder(input_ch=in_channels,
+        self.encoder = Encoder(input_channels=input_channels,
                                channels=channels,
                                latent_dim=emb_dim,
                                num_resblock=num_resblock,
                                groups=groups)
         
-        self.decoder = Decoder(out_channels=out_channels,
+        self.decoder = Decoder(output_channels=output_channels,
                                channels=channels[::-1],
                                latent_dim=emb_dim,
                                num_resblock=num_resblock,
@@ -119,7 +119,7 @@ class VQVAE(nn.Module):
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
         param_file = os.path.join(save_folder, 'parameters.pkl')
-        parameters = [self.in_channels,
+        parameters = [self.inputs_channels,
                       self.out_channels,
                       self.channels,
                       self.num_resblock,
@@ -241,7 +241,8 @@ class VQVAE(nn.Module):
 
     
     
-            
+if __name__ == '__main__':
+    pass  
     
     
 
