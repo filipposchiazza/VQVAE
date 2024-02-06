@@ -3,6 +3,7 @@ from modules.dataset import ImageDataset, prepare_ImageDataset
 from modules.vqvae import VQVAE
 from modules.vqvae_trainer import VQVAETrainer
 from modules.early_stopper import EarlyStopper
+from modules.loss import Variance_weighted_loss
 from torch import optim
 import torch.nn.functional as F
 
@@ -24,9 +25,6 @@ vqvae = VQVAE(input_channels=config.INPUT_CHANNELS,
               beta=config.BETA,
               ema_update=config.EMA_UPDATE)
 
-print(vqvae.num_trainable_param, vqvae.num_non_trainable_param)
-
-
 
 # Create optimizer, early stopper and learning rate scheduler
 optimizer = optim.Adam(vqvae.parameters(), lr=config.LEARNING_RATE)
@@ -41,7 +39,7 @@ early_stopper = EarlyStopper(patience=config.PATIENCE,
 
 
 # Define the reconstruction loss function
-rec_loss_fn = F.l1_loss
+rec_loss_fn = Variance_weighted_loss(device=config.DEVICE)
 
 
 # Create VQVAE trainer
