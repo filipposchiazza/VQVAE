@@ -20,8 +20,8 @@ class ImageDataset(data.Dataset):
         img_name = self.img_filenames[idx]
         img_path = os.path.join(self.img_dir, img_name)
         img = read_image(img_path)
-        image = image[:3, :, :]
-        image = image / 255.0
+        img = img[:3, :, :]
+        img = img / 255.0
         if self.transform:
             img = self.transform(img)
         return img

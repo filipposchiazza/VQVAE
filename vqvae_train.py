@@ -24,6 +24,9 @@ vqvae = VQVAE(input_channels=config.INPUT_CHANNELS,
               beta=config.BETA,
               ema_update=config.EMA_UPDATE)
 
+print(vqvae.num_trainable_param, vqvae.num_non_trainable_param)
+
+
 
 # Create optimizer, early stopper and learning rate scheduler
 optimizer = optim.Adam(vqvae.parameters(), lr=config.LEARNING_RATE)

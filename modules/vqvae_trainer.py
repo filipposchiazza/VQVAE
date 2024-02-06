@@ -29,7 +29,7 @@ class VQVAETrainer():
               train_dataloader,
               rec_loss_fn,
               val_dataloader=None,
-              ceckpoint_folder=None):
+              checkpoint_folder=None):
         
         # Store the number of codebook vectors used for each epoch by the VQVAE
         self.codebooks = []
@@ -70,13 +70,13 @@ class VQVAETrainer():
             if self.early_stopper is not None and val_dataloader is not None:
                 if self.early_stopper.early_stopping(monitor=val_loss_tot,
                                                      model=self.vqvae,
-                                                     ceckpoint_folder=ceckpoint_folder):
+                                                     checkpoint_folder=checkpoint_folder):
                     print(f'Early stopping at epoch {epoch+1}')
                     break
             elif self.early_stopper is not None:
                 if self.early_stopper.early_stopping(monitor=loss_tot,
                                                      model=self.vqvae,
-                                                     ceckpoint_folder=ceckpoint_folder):
+                                                     checkpoint_folder=checkpoint_folder):
                     print(f'Early stopping at epoch {epoch+1}')
                     break
                 

@@ -61,7 +61,7 @@ train_dataset, val_dataset, train_dataloader, val_dataloader = prepare_ImageData
                                                                                     fraction=config.FRACTION)
 
 # Load model
-vqvae_loaded = VQVAE.load_model(save_folder=MODEL_FOLDER)
+vqvae_loaded = VQVAE.load_model(save_folder=MODEL_FOLDER).to(config.DEVICE)
 
 
 # Plot dataset

@@ -85,7 +85,7 @@ class VQVAE(nn.Module):
     
     def forward(self, inputs):
         z = self.encoder(inputs)
-        loss, q, encoding_indices, perplexity, _ = self.vq_layer_ema(z)
+        loss, q, encoding_indices, perplexity, _ = self.vq_layer(z)
         x_rec = self.decoder(q)
         return loss, x_rec, encoding_indices, perplexity
     
@@ -102,7 +102,21 @@ class VQVAE(nn.Module):
         p_non_train = p_total - p_train
         return p_train, p_non_train
     
+
+    def generate_from_codes(self, codes):
+        "Starting from generated codes, generates synthetic images"
+        with torch.no_grad():
+            latent_shape_after_permute = (codes.shape[0], codes.shape[2], codes.shape[3], self.emb_dim)
+            encoding_indices = codes.view(-1).unsqueeze(1)
+            encodings = torch.zeros(encoding_indices.shape[0], self.vq_layer.num_emb, device=codes.device)
+            encodings.scatter_(1, encoding_indices, 1)
+            # quantize and unflatten
+            quantized = torch.matmul(encodings, self.vq_layer.emb.weight).view(latent_shape_after_permute)
+            quantized = quantized.permute(0, 3, 1, 2).contiguous()
+            syn_img = self.decoder(quantized)
+        return syn_img
     
+
 
     def save_model(self, save_folder):
         """Save the model and the parameters
@@ -119,8 +133,8 @@ class VQVAE(nn.Module):
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
         param_file = os.path.join(save_folder, 'parameters.pkl')
-        parameters = [self.inputs_channels,
-                      self.out_channels,
+        parameters = [self.input_channels,
+                      self.output_channels,
                       self.channels,
                       self.num_resblock,
                       self.num_emb,
@@ -239,12 +253,6 @@ class VQVAE(nn.Module):
         return n
     
 
-    
-    
-if __name__ == '__main__':
-    pass  
-    
-    
 
 
 

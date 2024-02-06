@@ -8,12 +8,12 @@ class EarlyStopper():
         self.counter = 0
         self.min_monitor = torch.inf
 
-    def early_stopping(self, monitor, model, ceckpoint_folder):
+    def early_stopping(self, monitor, model, checkpoint_folder):
         
         if monitor < self.min_monitor - self.min_delta:
             self.min_monitor = monitor
             self.counter = 0
-            model.save_model(ceckpoint_folder)
+            model.save_model(checkpoint_folder)
         else:
             self.counter += 1
             if self.counter >= self.patience:
