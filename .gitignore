@@ -1,5 +1,5 @@
 *.png
-*.txt
 *.pyc
 *.pt
 *.pkl
+info.txt
