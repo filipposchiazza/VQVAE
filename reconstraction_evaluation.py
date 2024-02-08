@@ -6,7 +6,7 @@ import config
 
 
 # Parameters
-MODEL_FOLDER = "./models/01"   # Path to the folder where the model is saved
+MODEL_FOLDER = "./models/02"   # Path to the folder where the model is saved
 NUM_IMAGES = 10                # Number of images to compare between real and reconstructed
 
 
@@ -69,7 +69,7 @@ plot_dataset(train_dataset, num_images=10, title='Training dataset')
 
 
 # Evaluate reconstruction
-reconstruction_evaluation(vqvae_loaded, val_dataset, num_images=2)
+reconstruction_evaluation(vqvae_loaded, val_dataset, num_images=NUM_IMAGES)
 
 
 
