@@ -118,7 +118,7 @@ class VQVAETrainer():
                 self.codebooks.append(current_codebook_usage)
 
                 # Compute the total loss
-                loss_rec = rec_loss_fn(imgs_rec, imgs)
+                loss_rec = rec_loss_fn(imgs_rec, imgs, epoch=epoch)
                 loss_tot = loss_rec + loss_quant
 
                 # Backward pass
@@ -143,7 +143,7 @@ class VQVAETrainer():
         return mean_loss_rec, mean_loss_quant, mean_loss_tot
 
 
-
+    @torch.no_grad()
     def _validate(self,
                   val_dataloader,
                   rec_loss_fn):
@@ -162,7 +162,7 @@ class VQVAETrainer():
                 loss_quant, imgs_rec, _, _ = self.vqvae(imgs)
 
                 # Compute the total loss
-                loss_rec = rec_loss_fn(imgs_rec, imgs)
+                loss_rec = rec_loss_fn(imgs_rec, imgs, epoch=0)
                 loss_tot = loss_rec + loss_quant
 
                 # Update the running and mean losses

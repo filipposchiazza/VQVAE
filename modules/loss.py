@@ -1,6 +1,10 @@
 import torch 
 import torch.nn as nn
 import torch.nn.functional as F
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
+
 
 
 
@@ -47,20 +51,31 @@ class Variance_weighted_loss(nn.Module):
 
 
 
-    def forward(self, output, target):
-        # From RGB to GrayScale
-        target_gray = torch.mean(target, dim=1, keepdim=True)
-
-        # Compute local mean
-        target_mean = F.conv2d(target_gray, self.kernel, padding=self.local_connectivity // 2)
-
-        # Compute local variance
-        target_variance = F.conv2d(target_gray ** 2, self.kernel, padding=self.local_connectivity // 2) - target_mean ** 2
-        target_variance = (target_variance - target_variance.min()) / (target_variance.max() - target_variance.min()) + 0.1
-        target_variance = torch.clip(target_variance, max=1.0) * 10
-
-        # Compute the loss
+    def forward(self, output, target, epoch):
+        # Compute the usual loss (without weighting by variance)
         loss = self.loss_fn(output, target, reduction='none')
-        loss *= target_variance
+
+        # Warmup according to the epoch
+        if epoch > 2:
+            # From RGB to GrayScale
+            target_gray = torch.mean(target, dim=1, keepdim=True)
+
+            # Compute local mean
+            target_mean = F.conv2d(target_gray, self.kernel, padding=self.local_connectivity // 2)
+
+            # Compute local variance
+            target_variance = F.conv2d(target_gray ** 2, self.kernel, padding=self.local_connectivity // 2) - target_mean ** 2
+            target_variance = (target_variance - target_variance.min()) / (target_variance.max() - target_variance.min()) + 0.5
+            #target_variance = torch.clip(target_variance, max=1.0) * 10
+
+            # Weight the loss by the variance
+            loss *= target_variance
+
+        # Reduce the loss to a scalar
         loss = torch.mean(loss)
         return loss
+    
+
+
+
+

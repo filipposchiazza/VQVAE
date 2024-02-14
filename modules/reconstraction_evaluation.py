@@ -1,13 +1,13 @@
 import torch
-from modules.vqvae import VQVAE
+from vqvae import VQVAE
 import matplotlib.pyplot as plt
-from modules.dataset import ImageDataset, prepare_ImageDataset
+from dataset import ImageDataset, prepare_ImageDataset
 import config
 
 
 # Parameters
-MODEL_FOLDER = "./models/02"   # Path to the folder where the model is saved
-NUM_IMAGES = 10                # Number of images to compare between real and reconstructed
+MODEL_FOLDER = "../models/01"   # Path to the folder where the model is saved
+NUM_IMAGES = 5               # Number of images to compare between real and reconstructed
 
 
 

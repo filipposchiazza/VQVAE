@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from modules.custom_activations import Swish
+from custom_activations import Swish
 
 
 class ResBlock(nn.Module):

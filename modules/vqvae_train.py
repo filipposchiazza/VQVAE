@@ -1,9 +1,9 @@
 import config
-from modules.dataset import ImageDataset, prepare_ImageDataset
-from modules.vqvae import VQVAE
-from modules.vqvae_trainer import VQVAETrainer
-from modules.early_stopper import EarlyStopper
-from modules.loss import Variance_weighted_loss
+from dataset import ImageDataset, prepare_ImageDataset
+from vqvae import VQVAE
+from vqvae_trainer import VQVAETrainer
+from early_stopper import EarlyStopper
+from loss import Variance_weighted_loss
 from torch import optim
 import torch.nn.functional as F
 

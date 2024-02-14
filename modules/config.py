@@ -1,16 +1,17 @@
+import torch
 # Configuration parameters
-DEVICE = 'cpu' 
-SAVE_FOLDER = './models/01'
+DEVICE = torch.device('cpu')
+SAVE_FOLDER = '../models/01'
 
 # Dataset parameters
-IMG_DIR = 'images/'
+IMG_DIR = '/home/filippo/Documenti/Ricerca/PatchesHumanitas_256x256_10x/good_patches/'
 FRACTION = 1.0 # Fraction of the dataset to use
 TRANSFORM = None # Transform to apply to the dataset
 
 # Model parameters
 INPUT_CHANNELS = 3 # 3 for RGB, 1 for grayscale
 OUT_CHANNELS = 3 # 3 for RGB, 1 for grayscale
-CHANNELS = [64, 128, 256, 512]
+CHANNELS = [32, 64, 128, 256]
 NUM_RES_BLOCK = 2
 NUM_EMB_VECTORS = 256
 EMB_DIM = 512

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from modules.building_modules import Encoder, Decoder, VectorQuantizer, VectorQuantizerEMA
+from building_modules import Encoder, Decoder, VectorQuantizer, VectorQuantizerEMA
 import os
 import pickle
 
